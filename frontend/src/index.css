@@ -143,3 +143,72 @@ body {
 .card-link:hover {
   text-decoration: underline;
 }
+
+.page-narrow {
+  max-width: 680px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.form input,
+.form select,
+.form textarea {
+  font: inherit;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #33466b;
+  background: #0f1830;
+  color: #e8edf5;
+}
+
+.form input:focus,
+.form select:focus,
+.form textarea:focus {
+  outline: 2px solid #5cc8ff;
+  outline-offset: 1px;
+}
+
+.field-error {
+  color: #ff8a8a;
+  font-size: 0.85rem;
+  font-weight: 400;
+}
+
+.alert {
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.alert-success {
+  background: #11331f;
+  color: #7ff0a6;
+}
+
+.alert-error {
+  background: #3a1620;
+  color: #ff9aa8;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
