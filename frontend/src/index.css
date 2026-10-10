@@ -468,3 +468,19 @@ body {
   border-color: #6a2535;
   align-self: flex-start;
 }
+
+.login-card {
+  background: #111a2e;
+  border: 1px solid #22304d;
+  border-radius: 16px;
+  padding: 24px;
+  margin-top: 24px;
+}
+
+.logout-bar {
+  max-width: 1150px;
+  margin: 0 auto;
+  padding: 16px 24px 0;
+  display: flex;
+  justify-content: flex-end;
+}

@@ -1,3 +1,4 @@
+import { requireAdmin } from "../middleware/adminAuth";
 import { Router } from "express";
 import mongoose from "mongoose";
 import { Enquiry, USER_TYPES, STATUSES } from "../models/Enquiry";
@@ -9,7 +10,7 @@ const router = Router();
 const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
 // GET /api/enquiries - get all (supports ?search= &userType= &status=)
-router.get("/", async (req, res) => {
+router.get("/", requireAdmin, async (req, res) => {
   try {
     const { search, userType, status } = req.query;
     const filter: Record<string, unknown> = {};
@@ -48,7 +49,7 @@ router.get("/", async (req, res) => {
 });
 
 // GET /api/enquiries/:id - get one
-router.get("/:id", async (req, res) => {
+router.get("/:id", requireAdmin, async (req, res) => {
   const { id } = req.params;
   if (!mongoose.isValidObjectId(id)) {
     return res.status(404).json({ message: "Enquiry not found" });
@@ -96,7 +97,7 @@ router.post("/", async (req, res) => {
 
 
 // PATCH /api/enquiries/:id - update an enquiry (for example, change its status)
-router.patch("/:id", async (req, res) => {
+router.patch("/:id", requireAdmin, async (req, res) => {
   const { id } = req.params;
   if (!mongoose.isValidObjectId(id)) {
     return res.status(404).json({ message: "Enquiry not found" });
@@ -134,7 +135,7 @@ router.patch("/:id", async (req, res) => {
 });
 
 // DELETE /api/enquiries/:id - delete an enquiry
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", requireAdmin, async (req, res) => {
   const { id } = req.params;
   if (!mongoose.isValidObjectId(id)) {
     return res.status(404).json({ message: "Enquiry not found" });
