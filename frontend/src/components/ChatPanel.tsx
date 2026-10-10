@@ -46,7 +46,7 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
   const [sending, setSending] = useState(false);
   const [typing, setTyping] = useState(false);
   const timer = useRef<number | undefined>(undefined);
-  const endRef = useRef<HTMLDivElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
   const { messages, flow } = state;
   const busy = sending || typing;
 
@@ -59,7 +59,7 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
   }, [state]);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+    const el = boxRef.current; if (el) el.scrollTop = el.scrollHeight;
   }, [state, typing, sending]);
 
   useEffect(() => () => window.clearTimeout(timer.current), []);
@@ -231,7 +231,7 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
         </button>
       </div>
 
-      <div className="chat-box">
+      <div className="chat-box" ref={boxRef}>
         {messages.map((m) => (
           <div key={m.id} className={`msg msg-${m.role}`}>
             <div className="bubble">{m.text}</div>
@@ -246,7 +246,6 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
             </div>
           </div>
         )}
-        <div ref={endRef} />
       </div>
 
       <div className="quick-replies">
