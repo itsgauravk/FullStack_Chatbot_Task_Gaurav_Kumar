@@ -4,6 +4,7 @@ import type { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import helmet from "helmet";
 import mongoose from "mongoose";
+import { rateLimit } from "express-rate-limit";
 import enquiryRoutes from "./routes/enquiries";
 
 const app = express();
@@ -14,10 +15,34 @@ app.use(helmet());
 app.use(cors({ origin: process.env.CLIENT_URL || "http://localhost:5173" }));
 app.use(express.json({ limit: "10kb" }));
 
+const tooMany = { message: "Too many requests. Please try again later." };
+
+// Visitors: at most 20 enquiries per 15 minutes from one address
+const submitLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: tooMany,
+});
+
+// Admin routes: at most 30 failed attempts per 15 minutes (slows password guessing)
+const adminLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 30,
+  skipSuccessfulRequests: true,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: tooMany,
+});
+
 app.get("/api/health", (_req, res) => {
   res.json({ status: "ok", message: "Server is running" });
 });
 
+app.use("/api/enquiries", (req: Request, res: Response, next: NextFunction) =>
+  req.method === "POST" ? submitLimiter(req, res, next) : adminLimiter(req, res, next)
+);
 app.use("/api/enquiries", enquiryRoutes);
 
 // Unknown route
