@@ -41,8 +41,8 @@ function validate(values: EnquiryInput): Record<string, string> {
 
 type Status = "idle" | "submitting" | "success" | "error";
 
-export default function EnquiryForm() {
-  const [values, setValues] = useState<EnquiryInput>(emptyForm);
+export default function EnquiryForm({ initialValues }: { initialValues?: Partial<EnquiryInput> }) {
+  const [values, setValues] = useState<EnquiryInput>({ ...emptyForm, ...initialValues });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<Status>("idle");
   const [feedback, setFeedback] = useState("");
