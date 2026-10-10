@@ -310,3 +310,161 @@ body {
   background: #0f1830;
   color: #e8edf5;
 }
+
+.admin {
+  max-width: 1150px;
+}
+
+.muted {
+  color: #8a99b5;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.toolbar input,
+.toolbar select,
+.status-label select {
+  font: inherit;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #33466b;
+  background: #0f1830;
+  color: #e8edf5;
+}
+
+.toolbar-search {
+  flex: 1;
+  min-width: 220px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid #22304d;
+  border-radius: 14px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.93rem;
+  white-space: nowrap;
+}
+
+.table th,
+.table td {
+  padding: 12px 14px;
+  text-align: left;
+  border-bottom: 1px solid #1c2845;
+}
+
+.table th {
+  background: #111a2e;
+  color: #b7c3d9;
+  font-weight: 600;
+}
+
+.table tbody tr:hover {
+  background: #101a30;
+}
+
+.btn-small {
+  padding: 6px 14px;
+  font-size: 0.88rem;
+}
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.badge-new {
+  background: #12304d;
+  color: #7cc8ff;
+}
+
+.badge-contacted {
+  background: #3a3012;
+  color: #ffd76a;
+}
+
+.badge-in-progress {
+  background: #2b2050;
+  color: #c3a8ff;
+}
+
+.badge-closed {
+  background: #11331f;
+  color: #7ff0a6;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 8, 18, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 50;
+}
+
+.modal {
+  width: 100%;
+  max-width: 560px;
+  max-height: 90vh;
+  overflow-y: auto;
+  background: #111a2e;
+  border: 1px solid #2b3c5f;
+  border-radius: 16px;
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 8px 14px;
+}
+
+.details dt {
+  color: #8a99b5;
+}
+
+.details dd {
+  overflow-wrap: anywhere;
+}
+
+.detail-message {
+  white-space: pre-line;
+}
+
+.status-label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.btn-danger {
+  background: #3a1620;
+  color: #ff9aa8;
+  border-color: #6a2535;
+  align-self: flex-start;
+}

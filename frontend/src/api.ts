@@ -57,3 +57,33 @@ export function createEnquiry(input: EnquiryInput) {
     body: JSON.stringify(input),
   });
 }
+
+export interface EnquiryFilters {
+  search?: string;
+  userType?: string;
+  status?: string;
+}
+
+export function getEnquiries(filters: EnquiryFilters = {}) {
+  const params = new URLSearchParams();
+  if (filters.search) params.set("search", filters.search);
+  if (filters.userType) params.set("userType", filters.userType);
+  if (filters.status) params.set("status", filters.status);
+  const query = params.toString();
+  return request<{ count: number; enquiries: Enquiry[] }>(
+    `/api/enquiries${query ? `?${query}` : ""}`
+  );
+}
+
+export function updateEnquiryStatus(id: string, status: string) {
+  return request<{ message: string; enquiry: Enquiry }>(
+    `/api/enquiries/${id}`,
+    { method: "PATCH", body: JSON.stringify({ status }) }
+  );
+}
+
+export function deleteEnquiry(id: string) {
+  return request<{ message: string }>(`/api/enquiries/${id}`, {
+    method: "DELETE",
+  });
+}
