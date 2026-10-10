@@ -44,8 +44,11 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
   const [state, setState] = useState<Saved>(load);
   const [input, setInput] = useState("");
   const [sending, setSending] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const timer = useRef<number | undefined>(undefined);
   const endRef = useRef<HTMLDivElement>(null);
   const { messages, flow } = state;
+  const busy = sending || typing;
 
   useEffect(() => {
     try {
@@ -53,10 +56,22 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
     } catch {
       // Ignore storage errors
     }
-    endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }, [state]);
 
-  function update(items: Omit<Message, "id">[], nextFlow: FlowState | null) {
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }, [state, typing, sending]);
+
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+
+  function addUser(msg: Omit<Message, "id">) {
+    setState((prev) => ({
+      ...prev,
+      messages: [...prev.messages, { ...msg, id: prev.messages.length }],
+    }));
+  }
+
+  function addBot(items: Omit<Message, "id">[], nextFlow: FlowState | null) {
     setState((prev) => ({
       messages: [
         ...prev.messages,
@@ -66,14 +81,24 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
     }));
   }
 
-  async function submit(userMsg: Omit<Message, "id">) {
+  // Show the typing dots for a moment, then deliver the bot's reply
+  function botReply(items: Omit<Message, "id">[], nextFlow: FlowState | null) {
+    const length = items.reduce((n, m) => n + m.text.length, 0);
+    const delay = 500 + Math.min(length * 8, 900);
+    setTyping(true);
+    timer.current = window.setTimeout(() => {
+      setTyping(false);
+      addBot(items, nextFlow);
+    }, delay);
+  }
+
+  async function submit() {
     if (!flow) return;
     setSending(true);
     try {
       const res = await createEnquiry(flow.data as EnquiryInput);
-      update(
+      addBot(
         [
-          userMsg,
           {
             role: "bot",
             text: `Thank you, ${res.enquiry.name}! Your enquiry has been submitted. Our team will get in touch with you soon.`,
@@ -89,9 +114,8 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
           ? `${err.message}:\n${details.map((d) => `• ${d}`).join("\n")}`
           : err.message;
       }
-      update(
+      addBot(
         [
-          userMsg,
           {
             role: "bot",
             text: `${msg}\nChoose "Yes, send it" to try again, or Cancel.`,
@@ -106,34 +130,32 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
 
   async function send(raw: string) {
     const text = raw.trim().slice(0, MAX_LENGTH);
-    if (!text || sending) return;
+    if (!text || busy) return;
     setInput("");
-    const userMsg = { role: "user" as const, text };
+    addUser({ role: "user", text });
 
     // Normal chat (no enquiry in progress)
     if (!flow) {
       const reply = getReply(text);
       if (reply.showForm) {
         const started = startFlow(reply.formDefaults ?? {});
-        update(
+        botReply(
           [
-            userMsg,
             { role: "bot", text: reply.text },
             { role: "bot", text: started.prompt },
           ],
           started.flow
         );
       } else {
-        update([userMsg, { role: "bot", text: reply.text }], null);
+        botReply([{ role: "bot", text: reply.text }], null);
       }
       return;
     }
 
     // The user can cancel at any time
     if (/^(cancel|stop)$/i.test(text)) {
-      update(
+      botReply(
         [
-          userMsg,
           {
             role: "bot",
             text: "No problem, I've cancelled the enquiry. Ask me anything else!",
@@ -147,16 +169,10 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
     // Waiting for the final yes / cancel
     if (flow.confirming) {
       if (/^(yes|y|send|submit|ok)\b/i.test(text)) {
-        await submit(userMsg);
+        await submit();
       } else {
-        update(
-          [
-            userMsg,
-            {
-              role: "bot",
-              text: 'Please choose "Yes, send it" or "Cancel".',
-            },
-          ],
+        botReply(
+          [{ role: "bot", text: 'Please choose "Yes, send it" or "Cancel".' }],
           flow
         );
       }
@@ -165,7 +181,7 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
 
     // Answer to one of the questions
     const result = answer(flow, text);
-    update([userMsg, { role: "bot", text: result.reply }], result.flow);
+    botReply([{ role: "bot", text: result.reply }], result.flow);
   }
 
   function handleSubmit(e: SyntheticEvent<HTMLFormElement>) {
@@ -174,6 +190,9 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
   }
 
   function reset() {
+    window.clearTimeout(timer.current);
+    setTyping(false);
+    setSending(false);
     setState(initial);
     setInput("");
     try {
@@ -202,7 +221,11 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
   return (
     <section className={compact ? "chat-compact" : "page page-narrow"}>
       <div className="chat-header">
-        {compact ? <h2 className="chat-title">DroneTV Assistant</h2> : <h1>Chat with us</h1>}
+        {compact ? (
+          <h2 className="chat-title">DroneTV Assistant</h2>
+        ) : (
+          <h1>Chat with us</h1>
+        )}
         <button type="button" className="btn btn-secondary" onClick={reset}>
           Clear chat
         </button>
@@ -214,6 +237,15 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
             <div className="bubble">{m.text}</div>
           </div>
         ))}
+        {busy && (
+          <div className="msg msg-bot">
+            <div className="bubble typing" aria-label="The assistant is typing">
+              <span />
+              <span />
+              <span />
+            </div>
+          </div>
+        )}
         <div ref={endRef} />
       </div>
 
@@ -223,7 +255,7 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
             key={c}
             type="button"
             className="chip"
-            disabled={sending}
+            disabled={busy}
             onClick={() => void send(c)}
           >
             {c}
@@ -239,7 +271,7 @@ export default function ChatPanel({ compact = false }: { compact?: boolean }) {
           placeholder={flow ? "Type your answer..." : "Type your question..."}
           aria-label="Your message"
         />
-        <button type="submit" className="btn btn-primary" disabled={sending}>
+        <button type="submit" className="btn btn-primary" disabled={busy}>
           Send
         </button>
       </form>
