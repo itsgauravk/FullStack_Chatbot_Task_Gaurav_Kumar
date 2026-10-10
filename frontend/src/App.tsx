@@ -1,5 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import ChatWidget from "./components/ChatWidget";
 import Home from "./pages/Home";
 import Chat from "./pages/Chat";
 import Services from "./pages/Services";
@@ -29,6 +30,7 @@ export default function App() {
           />
         </Routes>
       </main>
+      <ChatWidget />
     </BrowserRouter>
   );
 }
