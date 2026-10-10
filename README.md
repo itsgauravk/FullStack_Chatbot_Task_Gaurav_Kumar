@@ -117,7 +117,53 @@ Status codes: 201 created, 400 validation error, 401 unauthorized, 404 not found
 
 ## Screenshots
 
-Screenshots are in the `02_Screenshots` folder of the submission package.
+### Home page
+
+![Home page](docs/screenshots/01_home.png)
+
+### Services page
+
+![Services page](docs/screenshots/02_services.png)
+
+### Courses page
+
+![Courses page](docs/screenshots/03_courses.png)
+
+### Contact / enquiry form
+
+![Contact / enquiry form](docs/screenshots/04_contact_form.png)
+
+### Form validation errors
+
+![Form validation errors](docs/screenshots/05_contact_validation_errors.png)
+
+### Chatbot answering questions
+
+![Chatbot answering questions](docs/screenshots/06_chatbot_open.png)
+
+### Chatbot collecting an enquiry step by step
+
+![Chatbot collecting an enquiry step by step](docs/screenshots/07_chatbot_enquiry_flow.png)
+
+### Chatbot fallback for an unknown question
+
+![Chatbot fallback for an unknown question](docs/screenshots/08_chatbot_fallback.png)
+
+### Admin login
+
+![Admin login](docs/screenshots/09_admin_login.png)
+
+### Admin dashboard with search, filters and status badges
+
+![Admin dashboard with search, filters and status badges](docs/screenshots/10_admin_dashboard.png)
+
+### Enquiry details with status change and delete
+
+![Enquiry details with status change and delete](docs/screenshots/11_admin_details.png)
+
+### Mobile view
+
+![Mobile view](docs/screenshots/12_mobile_view.png)
 
 ## Live Demo
 
